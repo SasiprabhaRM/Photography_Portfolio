@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beautiful Photography</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fafafa;
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #8B4513;
+        }
+
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('https://images.unsplash.com/photo-1542038784456-1ea8e732331d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .hero-content p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #8B4513;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 0 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid #8B4513;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #A0522D;
+            border-color: #A0522D;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: #8B4513;
+            border-color: white;
+        }
+
+        .section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #8B4513;
+            font-weight: 300;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .card-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(139, 69, 19, 0.1), transparent);
+        }
+
+        .card-content {
+            padding: 2rem;
+        }
+
+        .card-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #8B4513;
+        }
+
+        .card-content p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f8f8f8, #f0f0f0);
+            border-radius: 5px;
+            border-left: 4px solid #8B4513;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            background: white;
+            border: 2px solid #8B4513;
+            color: #8B4513;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #8B4513;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gallery-item.hidden {
+            display: none;
+        }
+
+        .cta {
+            background: linear-gradient(135deg, #8B4513, #A0522D);
+            color: white;
+            text-align: center;
+            padding: 4rem 2rem;
+            margin-top: 3rem;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .cta p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(139, 69, 19, 0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover::after {
+            opacity: 1;
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #8B4513;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #eee;
+            border-radius: 5px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8B4513;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            padding: 3rem 2rem 1rem;
+            margin-top: 3rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-section h4 {
+            color: #8B4513;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .footer-section p {
+            margin-bottom: 0.5rem;
+            color: #ccc;
+        }
+
+        .footer-section a {
+            display: block;
+            color: #ccc;
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #8B4513;
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-content p {
+                font-size: 1.2rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="#" onclick="showPage('home')">Home</a></li>
+            <li><a href="#" onclick="showPage('about')">About</a></li>
+            <li><a href="#" onclick="showPage('services')">Services</a></li>
+            <li><a href="#" onclick="showPage('gallery')">Gallery</a></li>
+            <li><a href="#" onclick="showPage('contact')">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="home" class="page active">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Beautiful Photography</h1>
+                <p>Capturing life's precious moments with artistic vision</p>
+                <a href="#" class="btn" onclick="showPage('about')">Learn More</a>
+                <a href="#" class="btn btn-outline" onclick="showPage('contact')">Book Session</a>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Featured Work</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')"></div>
+                    <div class="card-content">
+                        <h3>Weddings</h3>
+                        <p>Capturing the magic of your special day with timeless elegance and artistic vision that will be treasured for generations.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')"></div>
+                    <div class="card-content">
+                        <h3>Portraits</h3>
+                        <p>Professional headshots and personal branding photography that tells your unique story with authenticity and style.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80')"></div>
+                    <div class="card-content">
+                        <h3>Events</h3>
+                        <p>Corporate events and celebrations documented with professional quality and an eye for meaningful moments.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>Alex Chen Photography</h4>
+                    <p>Capturing life's beautiful moments</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="#" onclick="showPage('home')">Home</a>
+                    <a href="#" onclick="showPage('about')">About</a>
+                    <a href="#" onclick="showPage('services')">Services</a>
+                    <a href="#" onclick="showPage('gallery')">Gallery</a>
+                    <a href="#" onclick="showPage('contact')">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>alex@alexchenphotography.com</p>
+                    <p>(555) 123-4567</p>
+                    <p>San Francisco, CA</p>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #555; padding-top: 20px; margin-top: 30px; text-align: center;">
+                <p>&copy; 2025 Alex Chen Photography. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- About Page -->
+    <div id="about" class="page">
+        <section class="section" style="margin-top: 80px;">
+            <h2>About Me</h2>
+            <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+                <div style="width: 300px; height: 300px; border-radius: 50%; background-image: url('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'); background-size: cover; background-position: center; margin: 0 auto 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);"></div>
+                <p style="font-size: 1.2rem; line-height: 1.8; color: #666; margin-bottom: 2rem;">
+                    I'm a passionate photographer dedicated to capturing the beauty and emotion in every moment. With over 10 years of experience, I specialize in creating timeless images that tell your unique story.
+                </p>
+                <p style="font-size: 1.1rem; line-height: 1.7; color: #777;">
+                    Whether it's your wedding day, a family portrait, or a corporate event, I bring an artistic eye and professional expertise to every shoot. My goal is to create photographs that you'll treasure for a lifetime.
+                </p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>Alex Chen Photography</h4>
+                    <p>Capturing life's beautiful moments</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="#" onclick="showPage('home')">Home</a>
+                    <a href="#" onclick="showPage('about')">About</a>
+                    <a href="#" onclick="showPage('services')">Services</a>
+                    <a href="#" onclick="showPage('gallery')">Gallery</a>
+                    <a href="#" onclick="showPage('contact')">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>alex@alexchenphotography.com</p>
+                    <p>(555) 123-4567</p>
+                    <p>San Francisco, CA</p>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #555; padding-top: 20px; margin-top: 30px; text-align: center;">
+                <p>&copy; 2025 Alex Chen Photography. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Services Page -->
+    <div id="services" class="page">
+        <section class="section" style="margin-top: 80px;">
+            <h2>Photography Services</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-content">
+                        <h3>📸 Wedding Photography</h3>
+                        <p>Complete wedding day coverage with 8-10 hours of shooting, 500+ professionally edited photos, and a beautiful online gallery for easy sharing with family and friends.</p>
+                        <div class="pricing">Starting at $2,500</div>
+                        <a href="#" class="btn" onclick="showPage('contact')">Learn More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h3>👤 Portrait Sessions</h3>
+                        <p>Professional headshots and personal branding photography with 1-2 hours session, multiple outfit changes, and 50+ beautifully edited photos.</p>
+                        <div class="pricing">Starting at $400</div>
+                        <a href="#" class="btn" onclick="showPage('contact')">Learn More</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <h3>🎉 Event Photography</h3>
+                        <p>Corporate events and celebrations with 4-6 hours of comprehensive coverage, candid moments, and 300+ professionally edited photos delivered promptly.</p>
+                        <div class="pricing">Starting at $800</div>
+                        <a href="#" class="btn" onclick="showPage('contact')">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <h2>Complete Service Information</h2>
+            <p>Download our detailed brochure to explore all photography packages and services</p>
+            <button class="btn" onclick="downloadBrochure()">Download Brochure (PDF)</button>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>Alex Chen Photography</h4>
+                    <p>Capturing life's beautiful moments</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="#" onclick="showPage('home')">Home</a>
+                    <a href="#" onclick="showPage('about')">About</a>
+                    <a href="#" onclick="showPage('services')">Services</a>
+                    <a href="#" onclick="showPage('gallery')">Gallery</a>
+                    <a href="#" onclick="showPage('contact')">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>alex@alexchenphotography.com</p>
+                    <p>(555) 123-4567</p>
+                    <p>San Francisco, CA</p>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #555; padding-top: 20px; margin-top: 30px; text-align: center;">
+                <p>&copy; 2025 Alex Chen Photography. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Gallery Page -->
+    <div id="gallery" class="page">
+        <section class="section" style="margin-top: 80px;">
+            <h2>Photography Gallery</h2>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterGallery('all')">All</button>
+                <button class="filter-btn" onclick="filterGallery('wedding')">Weddings</button>
+                <button class="filter-btn" onclick="filterGallery('portrait')">Portraits</button>
+                <button class="filter-btn" onclick="filterGallery('event')">Events</button>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-item" data-category="wedding" style="background-image: url('https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')"></div>
+                <div class="gallery-item" data-category="portrait" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')"></div>
+                <div class="gallery-item" data-category="event" style="background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80')"></div>
+                <div class="gallery-item" data-category="wedding" style="background-image: url('https://images.unsplash.com/photo-1520854221256-17451cc331bf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')"></div>
+                <div class="gallery-item" data-category="portrait" style="background-image: url('https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')"></div>
+                <div class="gallery-item" data-category="event" style="background-image: url('https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80')"></div>
+                <div class="gallery-item" data-category="wedding" style="background-image: url('https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')"></div>
+                <div class="gallery-item" data-category="portrait" style="background-image: url('https://images.unsplash.com/photo-1522673607200-164d1b6ce486?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')"></div>
+                <div class="gallery-item" data-category="wedding" style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')"></div>
+                <div class="gallery-item" data-category="event" style="background-image: url('https://images.unsplash.com/photo-1515169067868-5387ec356754?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')"></div>
+                <div class="gallery-item" data-category="portrait" style="background-image: url('https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')"></div>
+                <div class="gallery-item" data-category="wedding" style="background-image: url('https://images.unsplash.com/photo-1537633552985-df8429e8048b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')"></div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <h2>Inspired by What You See?</h2>
+            <p>Each image represents a story, a moment, a memory captured forever.</p>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>Alex Chen Photography</h4>
+                    <p>Capturing life's beautiful moments</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="#" onclick="showPage('home')">Home</a>
+                    <a href="#" onclick="showPage('about')">About</a>
+                    <a href="#" onclick="showPage('services')">Services</a>
+                    <a href="#" onclick="showPage('gallery')">Gallery</a>
+                    <a href="#" onclick="showPage('contact')">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>alex@alexchenphotography.com</p>
+                    <p>(555) 123-4567</p>
+                    <p>San Francisco, CA</p>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #555; padding-top: 20px; margin-top: 30px; text-align: center;">
+                <p>&copy; 2025 Alex Chen Photography. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Contact Page -->
+    <div id="contact" class="page">
+        <section class="section" style="margin-top: 80px;">
+            <h2>Get In Touch</h2>
+            <div class="contact-form">
+                <form>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="service">Service Needed</label>
+                        <input type="text" id="service" name="service" placeholder="Wedding, Portrait, Event, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" placeholder="Tell me about your vision..."></textarea>
+                    </div>
+                    <button type="submit" class="btn">Send Message</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>Alex Chen Photography</h4>
+                    <p>Capturing life's beautiful moments</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="#" onclick="showPage('home')">Home</a>
+                    <a href="#" onclick="showPage('about')">About</a>
+                    <a href="#" onclick="showPage('services')">Services</a>
+                    <a href="#" onclick="showPage('gallery')">Gallery</a>
+                    <a href="#" onclick="showPage('contact')">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>alex@alexchenphotography.com</p>
+                    <p>(555) 123-4567</p>
+                    <p>San Francisco, CA</p>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #555; padding-top: 20px; margin-top: 30px; text-align: center;">
+                <p>&copy; 2025 Alex Chen Photography. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function filterGallery(category) {
+            const items = document.querySelectorAll('.gallery-item');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            // Update active button
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Filter items
+            items.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        function downloadBrochure() {
+            // Create a simple text content for the brochure
+            const brochureContent = `
+BEAUTIFUL PHOTOGRAPHY - SERVICE BROCHURE
+
+WEDDING PHOTOGRAPHY - Starting at $2,500
+• 8-10 hours of comprehensive coverage
+• 500+ professionally edited photos  
+• Beautiful online gallery for sharing
+• Engagement session included
+• USB drive with high-resolution images
+
+PORTRAIT SESSIONS - Starting at $400
+• 1-2 hours professional session
+• Multiple outfit changes
+• 50+ beautifully edited photos
+• Professional retouching
+• Online gallery for easy download
+
+EVENT PHOTOGRAPHY - Starting at $800
+• 4-6 hours of event coverage
+• Candid and posed photography
+• 300+ professionally edited photos
+• Quick turnaround (48-72 hours)
+• Corporate and celebration events
+
+ADDITIONAL SERVICES:
+• Photo albums and prints
+• Canvas and metal prints
+• Rush delivery available
+• Additional photographer option
+
+Contact us to discuss custom packages tailored to your needs!
+
+Email: info@beautifulphotography.com
+Phone: (555) 123-4567
+Website: www.beautifulphotography.com
+            `;
+
+            // Create and download the file
+            const blob = new Blob([brochureContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Photography-Services-Brochure.txt';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            alert('Brochure downloaded! Check your downloads folder.');
+        }
+
+        // Form submission handler
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your message! I will get back to you soon.');
+            this.reset();
+        });
+
+        // Smooth scroll for navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth transitions
+            document.body.style.transition = 'all 0.3s ease';
+        });
+    </script>
+</body>
+</html>
